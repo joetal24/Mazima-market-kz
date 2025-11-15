@@ -1,7 +1,12 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export function CTA() {
+  const router = useRouter()
+
   return (
     <section className="py-20 md:py-32 bg-gradient-to-br from-primary/10 to-accent/10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -13,11 +18,19 @@ export function CTA() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-          <Button size="lg" className="bg-primary hover:bg-primary/90 text-white">
-            I'm a Farmer - Join Free <ArrowRight className="ml-2 h-4 w-4" />
+          <Button 
+            size="lg" 
+            className="bg-primary hover:bg-primary/90 text-white"
+            onClick={() => router.push('/sign-up')}
+          >
+            Get Started <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
-          <Button size="lg" variant="outline">
-            I'm a Buyer
+          <Button 
+            size="lg" 
+            variant="outline"
+            onClick={() => router.push('/market-prices')}
+          >
+            Check Market Prices
           </Button>
         </div>
 
@@ -25,7 +38,6 @@ export function CTA() {
           No credit card required. Start buying and selling in minutes.
         </p>
 
-        {/* Testimonial-style quote */}
         <div className="mt-16 bg-card rounded-lg p-8 border border-border">
           <p className="text-lg italic text-foreground mb-4">
             "Imagine if every Ugandan farmer could see today's market prices, connect directly with buyers, and sell produce without being exploited by middlemen — all from their phone, in their own language."

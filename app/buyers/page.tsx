@@ -5,7 +5,11 @@ import { Footer } from '@/components/footer'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Briefcase, Users, TrendingUp, CheckCircle } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { trpcClient } from '@/lib/trpc'
+import { BuyerRequestCard } from '@/components/buyer-request-card'
+import { useRouter } from 'next/navigation'
+import type { BuyerRequest } from '@/db/schemas'
 
 const buyerTypes = [
   {
@@ -42,51 +46,25 @@ const buyerTypes = [
   }
 ]
 
-const activeOrders = [
-  {
-    id: 101,
-    buyer: "Nakasero Market Wholesalers",
-    type: "Wholesalers",
-    product: "Maize",
-    quantity: "2000 bags",
-    status: "Looking for supplier",
-    budget: "UGX 90M",
-    deadline: "Next 7 days"
-  },
-  {
-    id: 102,
-    buyer: "Nakumatt Supermarkets",
-    type: "Retail Store",
-    product: "Fresh Tomatoes",
-    quantity: "500 crates/week",
-    status: "Ongoing supply",
-    budget: "UGX 17.5M/month",
-    deadline: "Continuous"
-  },
-  {
-    id: 103,
-    buyer: "Uganda Tea & Coffee Export Ltd",
-    type: "Exporters",
-    product: "Coffee Beans (Grade A)",
-    quantity: "50 tons",
-    status: "Order confirmed",
-    budget: "UGX 600M",
-    deadline: "2 months"
-  },
-  {
-    id: 104,
-    buyer: "Mulago Hospital",
-    type: "Institutions",
-    product: "Fresh Vegetables Mix",
-    quantity: "200kg weekly",
-    status: "Seeking reliable supplier",
-    budget: "UGX 3M/week",
-    deadline: "Immediate"
-  }
-]
-
 export default function BuyersPage() {
-  const [activeTab, setActiveTab] = useState('overview')
+  const router = useRouter()
+  const [buyerRequests, setBuyerRequests] = useState<BuyerRequest[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const data = await trpcClient.buyerRequest.getAll.query()
+        setBuyerRequests(data || [])
+      } catch (error) {
+        console.error('Failed to fetch buyer requests:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchRequests()
+  }, [])
 
   return (
     <div className="min-h-screen bg-background">
@@ -108,7 +86,11 @@ export default function BuyersPage() {
             {buyerTypes.map(buyer => {
               const Icon = buyer.icon
               return (
-                <Card key={buyer.id} className="overflow-hidden hover:shadow-lg transition-all group">
+                <Card 
+                  key={buyer.id} 
+                  className="overflow-hidden hover:shadow-lg transition-all group cursor-pointer"
+                  onClick={() => console.log('[v0] Buyer type selected:', buyer.type)}
+                >
                   <div className={`bg-gradient-to-br ${buyer.color} h-20`}></div>
                   <div className="p-6 relative -mt-10 bg-background rounded-t-lg">
                     <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 mb-4">
@@ -127,44 +109,25 @@ export default function BuyersPage() {
         {/* Active Buyer Requests */}
         <div>
           <h2 className="text-2xl font-bold text-foreground mb-8">Active Buyer Requests</h2>
-          <div className="space-y-4">
-            {activeOrders.map(order => (
-              <Card key={order.id} className="p-6 hover:shadow-lg transition-all">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-start mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase mb-1">Buyer</p>
-                    <p className="font-bold text-foreground">{order.buyer}</p>
-                    <p className="text-sm text-primary">{order.type}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase mb-1">Product</p>
-                    <p className="font-bold text-foreground">{order.product}</p>
-                    <p className="text-sm text-muted-foreground">{order.quantity}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase mb-1">Budget</p>
-                    <p className="font-bold text-primary text-lg">{order.budget}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase mb-1">Status</p>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                      <span className="w-2 h-2 rounded-full bg-primary"></span>
-                      {order.status}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-muted-foreground uppercase mb-2">Action</p>
-                    <Button size="sm" className="bg-primary hover:bg-primary/90">
-                      Respond
-                    </Button>
-                  </div>
-                </div>
-                <div className="border-t pt-3">
-                  <p className="text-xs text-muted-foreground">Deadline: {order.deadline}</p>
-                </div>
-              </Card>
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-center py-16">
+              <p className="text-muted-foreground">Loading buyer requests...</p>
+            </div>
+          ) : buyerRequests.length > 0 ? (
+            <div className="space-y-4">
+              {buyerRequests.map(request => (
+                <BuyerRequestCard 
+                  key={request.id}
+                  request={request}
+                  onRespond={(r) => console.log('Respond to request:', r)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <p className="text-muted-foreground">No active buyer requests at the moment</p>
+            </div>
+          )}
         </div>
       </div>
 

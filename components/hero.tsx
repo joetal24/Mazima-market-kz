@@ -1,7 +1,12 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { ArrowRight, TrendingUp, Users, Zap } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export function Hero() {
+  const router = useRouter()
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-secondary/20 py-20 md:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -32,11 +37,19 @@ export function Hero() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white">
-                Join as Farmer <ArrowRight className="ml-2 h-4 w-4" />
+              <Button 
+                size="lg" 
+                className="bg-primary hover:bg-primary/90 text-white"
+                onClick={() => router.push('/sign-up')}
+              >
+                Get Started <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button size="lg" variant="outline">
-                I'm a Buyer
+              <Button 
+                size="lg" 
+                variant="outline"
+                onClick={() => router.push('/farmers')}
+              >
+                Browse Listings
               </Button>
             </div>
 

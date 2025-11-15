@@ -4,9 +4,16 @@ import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export function Navigation() {
+  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const handleNavigation = (path: string) => {
+    setMobileMenuOpen(false)
+    router.push(path)
+  }
 
   return (
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
@@ -30,8 +37,20 @@ export function Navigation() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="outline" size="sm">Sign In</Button>
-            <Button size="sm" className="bg-primary hover:bg-primary/90">Get Started</Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => router.push('/sign-in')}
+            >
+              Sign In
+            </Button>
+            <Button 
+              size="sm" 
+              className="bg-primary hover:bg-primary/90"
+              onClick={() => router.push('/sign-up')}
+            >
+              Get Started
+            </Button>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -51,8 +70,21 @@ export function Navigation() {
             <Link href="/buyers" className="block text-sm text-muted-foreground hover:text-foreground">Find Buyers</Link>
             <Link href="/market-prices" className="block text-sm text-muted-foreground hover:text-foreground">Prices</Link>
             <div className="flex gap-2 pt-4">
-              <Button variant="outline" size="sm" className="flex-1">Sign In</Button>
-              <Button size="sm" className="flex-1 bg-primary">Get Started</Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex-1"
+                onClick={() => handleNavigation('/sign-in')}
+              >
+                Sign In
+              </Button>
+              <Button 
+                size="sm" 
+                className="flex-1 bg-primary"
+                onClick={() => handleNavigation('/sign-up')}
+              >
+                Get Started
+              </Button>
             </div>
           </div>
         )}
