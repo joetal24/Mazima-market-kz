@@ -8,3 +8,5 @@ export const trpcClient = createTRPCProxyClient<AppRouter>({
     }),
   ],
 })
+
+export const trpc = trpcClient
