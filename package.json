@@ -78,6 +78,7 @@
     "next": "16.0.3",
     "next-themes": "latest",
     "pg": "latest",
+    "pg-native": "latest",
     "postgres": "latest",
     "react": "19.2.0",
     "react-day-picker": "9.8.0",
